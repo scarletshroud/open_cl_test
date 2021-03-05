@@ -69,7 +69,7 @@ int NaiveGpuTest::test() {
     contextDevices.push_back(m_device);
     cl::Context context(contextDevices);
 
-    cl::CommandQueue queue(context, m_device);
+    cl::CommandQueue queue(context, m_device, CL_QUEUE_PROFILING_ENABLE);
 
     cl::Buffer inputMatrixA = cl::Buffer(
         context, CL_MEM_READ_ONLY  | CL_MEM_COPY_HOST_PTR,
@@ -86,7 +86,7 @@ int NaiveGpuTest::test() {
         m_matrix_size * m_matrix_size * sizeof(double), (void*) m_matrixC.data()
     );
 
-    std::ifstream sourceFile("C:/Users/nooba/source/repos/test_cl/test_cl/MultiplyKernel.cl");
+    std::ifstream sourceFile("./Kernels/MultiplyKernel.cl");
     std::string sourceCode(std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
 
     cl::Program::Sources source(1, std::make_pair(sourceCode.c_str(), sourceCode.length() + 1));
@@ -117,10 +117,10 @@ int NaiveGpuTest::test() {
     kernel.setArg(iArg++, outputMatrixC);
     kernel.setArg(iArg++, m_matrix_size);
 
-    auto start_time = std::chrono::high_resolution_clock::now();
-
     std::cout << "Naive matrix multiplication on GPU started..." << std::endl;
-    int clEnq = queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(m_matrix_size, m_matrix_size), cl::NDRange(8, 8));
+    cl::Event event;
+
+    int clEnq = queue.enqueueNDRangeKernel(kernel, cl::NullRange, cl::NDRange(m_matrix_size, m_matrix_size), cl::NDRange(8, 8), NULL, &event);
     if (clEnq != CL_SUCCESS) {
         std::cout << "An error occurred while adding a command to the queue to execute a kernel on a device." << std::endl;
         std::cout << "Error Code: " << clEnq << std::endl; 
@@ -129,16 +129,23 @@ int NaiveGpuTest::test() {
 
     queue.finish();
 
-    auto end_time = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count();
+    cl_ulong start_time; 
+    cl_ulong end_time;
 
-    queue.enqueueReadBuffer(outputMatrixC, CL_TRUE, 0,
-        m_matrix_size * m_matrix_size * sizeof(double), (void*) m_matrixC.data());
+    event.getProfilingInfo(CL_PROFILING_COMMAND_START, &start_time); 
+    event.getProfilingInfo(CL_PROFILING_COMMAND_END, &end_time);
+
+    double milliseconds = (end_time - start_time) / 1000000.0; 
+
+    queue.enqueueReadBuffer(
+        outputMatrixC, CL_TRUE, 0,
+        m_matrix_size * m_matrix_size * sizeof(double), (void*) m_matrixC.data()
+    );
 
     std::cout << std::endl << "-----------Matrix-Multiplication-Is-Successful-----------" << std::endl;
     std::cout << "Computing Device: " << m_device.getInfo<CL_DEVICE_NAME>() <<  std::endl;
     std::cout << "Matrix Size: " << m_matrix_size << std::endl;
-    std::cout << "Compution time: " << duration << "ms" << std::endl;
+    std::cout << "Compution time: " << milliseconds << "ms" << std::endl;
     std::cout << "---------------------------------------------------------" << "\n\n";
     return 0;
 }
