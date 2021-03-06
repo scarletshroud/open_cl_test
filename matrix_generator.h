@@ -3,8 +3,6 @@
 
 #include <vector>
 
-typedef std::vector<double> Matrix;
-
-Matrix generateMatrix(const size_t, const size_t);
+std::vector<double> generateMatrix(const size_t size);
 
 #endif // ! _MATRIX_GENERATOR_H_
