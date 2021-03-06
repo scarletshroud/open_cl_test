@@ -7,9 +7,7 @@ __kernel void MultiplyKernel(
 	int row = get_global_id(0);
 	int col = get_global_id(1);
 
-	double sum = 0;
 	for (int i = 0; i < matrixSize; i++) {
-		sum += matrixA[row * matrixSize + i] * matrixB[col * matrixSize + col];
+		matrixC[row * matrixSize + col] += matrixA[row * matrixSize + i] * matrixB[col * matrixSize + i];
 	}
-	matrixC[row * matrixSize + col] = sum;
 }
