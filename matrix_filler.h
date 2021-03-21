@@ -3,7 +3,7 @@
 
 #include <vector>
 
-void fillMatrixWithRandom(double* matrix, const size_t size, const size_t depth);
-void fillMatrixWithZeros(double* matrix, const size_t size); 
+void fillMatrixWithRandom(float* matrix, const size_t size, const size_t depth);
+void fillMatrixWithZeros(float* matrix, const size_t size); 
 
 #endif // ! _MATRIX_GENERATOR_H_

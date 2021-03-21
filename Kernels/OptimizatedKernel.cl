@@ -1,35 +1,40 @@
+#define MAX_SIZE 300
+
 __kernel void MultiplyKernel(
-	__global const double* matrixA, 
-	__global const double* matrixB, 
-	__global double* matrixC, 
+	__global const float* matrixA, 
+	__global const float* matrixB, 
+	__global float* matrixC, 
 	int matrixSize
 ) {
-	int row = get_global_id(0);
+	const int row = get_global_id(0);
+	const int localCol = get_local_id(0);
+	const int localSize = get_local_size(0);
 	
-	double bufA[2000];
+	float bufA[MAX_SIZE];
+	__local float bufB[MAX_SIZE];
 	
 	for (int i = 0; i < matrixSize; i++) {
-		bufA[i] = matrixA[row * matrixSize + i];
+			bufA[i] = matrixA[row * matrixSize + i];
 	}
 	
-	int idlocal = get_local_id(0);
-	int nlocal = get_local_size(0);
-	__local double bufB[2000]; 
-	
-	double sum;
-	
+	float sum;
+
 	for (int col = 0; col < matrixSize; col++) {
-		sum = 0.0;
 		
-		for (int i = idlocal; i < matrixSize; i = i + nlocal) {
-			bufB[i] = matrixB[col * matrixSize + i];
+		for (int i = localCol; i < matrixSize; i += localSize) {
+			bufB[i] = matrixB[i * matrixSize + col];
 		}
+	
 		barrier(CLK_LOCAL_MEM_FENCE);
+		
+		sum = 0.0f;
 		
 		for (int i = 0; i < matrixSize; i++) {
 			sum += bufA[i] * bufB[i];
 		}
 		
 		matrixC[row * matrixSize + col] = sum;
+		
+		barrier(CLK_LOCAL_MEM_FENCE);
 	}
 }

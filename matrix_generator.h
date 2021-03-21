@@ -3,6 +3,6 @@
 
 #include <vector>
 
-std::vector<double> generateMatrix(const size_t size);
+std::vector<float> generateMatrix(const size_t size);
 
 #endif // ! _MATRIX_GENERATOR_H_

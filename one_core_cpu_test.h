@@ -3,15 +3,16 @@
 
 #include <vector>
 
-typedef std::vector<double> matrix;
+#include "answer.h"
+
+typedef std::vector<float> matrix;
 
 class CpuTest {
 public:
 	CpuTest(); 
 	~CpuTest(); 
-	
-	int init(matrix& matrixA, matrix& matrixB, matrix& matrixC, int size);
-	void test();
+
+	void test(matrix& matrixA, matrix& matrixB, int rows, int cols, Answer& answer);
 
 private:
 	matrix m_matrixA; 
@@ -20,7 +21,7 @@ private:
 
 	int m_matrix_size;
 
-	void multiply();
+	matrix multiply(matrix& matrixA, matrix& matrixB, int rows, int cols);
 };
 
 #endif

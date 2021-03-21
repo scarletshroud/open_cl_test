@@ -6,19 +6,25 @@
 class Test {
 public:
 	Test();
-	Test(std::vector<double>& matrixA, std::vector<double>& matrixB, int matrixSize);
+	Test(std::vector<float>& matrixA, std::vector<float>& matrixB, std::vector<float>& matrixC, int m, int n, int k);
 	~Test(); 
 
-	std::vector<double>& matrixA();
-	std::vector<double>& matrixB(); 
+	std::vector<float>& matrixA();
+	std::vector<float>& matrixB();
+	std::vector<float>& matrixC();
 
-	int matrixSize(); 
+	int m(); 
+	int n();
+	int k();
 
 private:
-	std::vector<double> m_matrixA; 
-	std::vector<double> m_matrixB;
+	std::vector<float> m_matrixA; 
+	std::vector<float> m_matrixB;
+	std::vector<float> m_matrixC;
 	
-	int m_matrixSize; 
+	int m_m;
+	int m_n;
+	int m_k;
 };
 
 #endif // ! TEST_H_
