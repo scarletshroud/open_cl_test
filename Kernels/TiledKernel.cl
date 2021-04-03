@@ -1,8 +1,8 @@
 #define TILE_SIZE 32
 __kernel void MultiplyKernel(
-	__global const float* matrixA,
-	__global const float* matrixB,
-	__global float* matrixC, 
+	__global const double* matrixA,
+	__global const double* matrixB,
+	__global double* matrixC, 
 	int m,
 	int n,
 	int k
@@ -14,10 +14,10 @@ __kernel void MultiplyKernel(
 	const int globalRow = get_global_id(0);
 	const int globalCol = get_global_id(1); 
 
-	__local float tileA[TILE_SIZE][TILE_SIZE]; 
-	__local float tileB[TILE_SIZE][TILE_SIZE];
+	__local double tileA[TILE_SIZE][TILE_SIZE]; 
+	__local double tileB[TILE_SIZE][TILE_SIZE];
 
-	float sum = 0.0f;
+	double sum = 0.0f;
 
 	const int additionalTile = (n % TILE_SIZE != 0);
 	const int tilesAmount = n / TILE_SIZE + additionalTile;
@@ -28,7 +28,7 @@ __kernel void MultiplyKernel(
 		const int col = TILE_SIZE * tile + tileCol; 
 
 		if (globalRow < m && col < n)
-			tileA[tileRow][tileCol] = matrixA[globalRow * m + col];
+			tileA[tileRow][tileCol] = matrixA[globalRow * n + col];
 		else
 			tileA[tileRow][tileCol] = 0; 
 

@@ -3,9 +3,9 @@
 #define RTS 4
 
 __kernel void MultiplyKernel(
-	__global const float* matrixA,
-	__global const float* matrixB,
-	__global float* matrixC,
+	__global const double* matrixA,
+	__global const double* matrixB,
+	__global double* matrixC,
 	int matrixSize
 )
 {
@@ -15,10 +15,10 @@ __kernel void MultiplyKernel(
 	const int globalRow = TILE_SIZE * get_group_id(0) + row;
 	const int globalCol = TILE_SIZE * get_group_id(1) + col;
 
-	__local float tileA[TILE_SIZE][TILE_SIZE];
-	__local float tileB[TILE_SIZE][TILE_SIZE];
+	__local double tileA[TILE_SIZE][TILE_SIZE];
+	__local double tileB[TILE_SIZE][TILE_SIZE];
 
-	float acc[WPT];
+	double acc[WPT];
 	for (unsigned int i = 0; i < WPT; i++) {
 		acc[i] = 0.0f;
 	}
